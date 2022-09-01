@@ -16,8 +16,6 @@
 
 package com.android.documentsui;
 
-import static com.android.documentsui.base.SharedMinimal.VERBOSE;
-
 import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -32,9 +30,6 @@ import android.os.RemoteException;
 import android.provider.DocumentsContract;
 import android.provider.DocumentsContract.Document;
 import android.util.Log;
-
-import androidx.annotation.Nullable;
-import androidx.loader.content.AsyncTaskLoader;
 
 import com.android.documentsui.archives.ArchivesProvider;
 import com.android.documentsui.base.DebugFlags;
@@ -52,6 +47,11 @@ import com.android.documentsui.sorting.SortModel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executor;
+
+import androidx.annotation.Nullable;
+import androidx.loader.content.AsyncTaskLoader;
+
+import static com.android.documentsui.base.SharedMinimal.VERBOSE;
 
 public class DirectoryLoader extends AsyncTaskLoader<DirectoryResult> {
 
@@ -101,7 +101,8 @@ public class DirectoryLoader extends AsyncTaskLoader<DirectoryResult> {
         mPhotoPicking = state.isPhotoPicking();
     }
 
-    @Override
+    //已经弃用的方法
+    //@Override
     protected Executor getExecutor() {
         return ProviderExecutor.forAuthority(mRoot.authority);
     }
