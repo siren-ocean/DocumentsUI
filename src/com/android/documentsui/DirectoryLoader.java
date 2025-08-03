@@ -100,7 +100,8 @@ public class DirectoryLoader extends AsyncTaskLoader<DirectoryResult> {
         mPhotoPicking = state.isPhotoPicking();
     }
 
-    @Override
+    // 废弃方法
+    // @Override
     protected Executor getExecutor() {
         return ProviderExecutor.forAuthority(mRoot.authority);
     }
