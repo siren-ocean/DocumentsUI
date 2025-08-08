@@ -4,7 +4,6 @@
 ### 支持说明
 * 不试图改变项目本身的目录结构
 * 通过添加额外的配置和依赖构建Gradle环境支持
-* 会使用脚本移除一些AS不支持的属性和字段，然后利用git本地忽略
 * 会修改以下两处不支持运行的代码 (如下)
 
  
@@ -44,13 +43,25 @@ public void updateAsync(boolean forceRefreshAll, @Nullable Runnable callback) {
 }
 ```
 
+## 使用命令编译
+### 环境依赖
+*  Gradle 6.5
+*  JDK version >= 8
+
+```
+# 构建环境
+gradle wrapper
+
+# 打包编译
+./gradlew assemble
+```
 
 
-## 执行步骤
-#### 第一步：运行在Filter上的主函数，执行过滤任务
-<img src="images/filter_main.png" width = "696" height = "396"/>
+## 使用Android Studio编译
+### 推荐使用
+*  Android Studio >= 4.2.2 & JDK version >= 8
 
-### 第二步：执行Android Studio上Build APK的操作, 然后将apk推送到设备上DocumentsUI所在的目录
+### 执行Android Studio上Build APK的操作, 然后将apk推送到设备上DocumentsUI所在的目录
 
 ```
 adb push DocumentsUI.apk /system/priv-app/DocumentsUI/
@@ -147,22 +158,6 @@ sourceSets {
     }
 ```
 
-### PS:
-##### 查看被忽略的文件列表
-```
-git ls-files -v | grep '^h\ '
-```  
-
-##### 忽略和还原单个文件
-``` 
-git update-index --assume-unchanged $path
-git update-index --no-assume-unchanged $path
-``` 
-
-##### 还原全部被忽略的文件
-```
-git ls-files -v | grep '^h' | awk '{print $2}' |xargs git update-index --no-assume-unchanged 
-```
 
 ---
 
