@@ -1,0 +1,23 @@
+[versions]
+agp = "7.4.2"
+recyclerview = "1.2.1"
+recyclerview-selection = "1.2.0-alpha01"
+legacy-support = "1.0.0"
+appcompat = "1.4.0"
+material = "1.6.1"
+guava = "31.1-android"
+compress = "1.21"
+transition = "1.2.0-qpreview01"
+
+[libraries]
+recyclerview = { module = "androidx.recyclerview:recyclerview", version.ref = "recyclerview" }
+recyclerview-selection = { module = "androidx.recyclerview:recyclerview-selection", version.ref = "recyclerview-selection" }
+legacy-support-v4 = { module = "androidx.legacy:legacy-support-v4", version.ref = "legacy-support" }
+appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
+material = { module = "com.google.android.material:material", version.ref = "material" }
+guava = { module = "com.google.guava:guava", version.ref = "guava" }
+commons-compress = { module = "org.apache.commons:commons-compress", version.ref = "compress" }
+transition = { module = "androidx.transition:transition", version.ref = "transition" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }

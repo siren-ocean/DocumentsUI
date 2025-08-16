@@ -1,0 +1,86 @@
+plugins {
+    alias(libs.plugins.android.application)
+}
+
+android {
+    compileSdk COMPILE_SDK.toInteger()
+
+    defaultConfig {
+        applicationId "com.android.documentsui"
+        minSdk MIN_SDK_VERSION.toInteger()
+        targetSdk TARGET_SDK_VERSION.toInteger()
+        versionCode 33
+        versionName "13"
+    }
+
+    signingConfigs {
+        platform {
+            storeFile file("platform.keystore")
+            storePassword '123456'
+            keyAlias 'platform'
+            keyPassword '123456'
+        }
+    }
+
+    buildTypes {
+        release {
+            debuggable false
+            minifyEnabled false
+            signingConfig signingConfigs.platform
+        }
+
+        debug {
+            debuggable true
+            minifyEnabled false
+            signingConfig signingConfigs.platform
+        }
+
+        applicationVariants.all { variant ->
+            variant.outputs.all {
+                outputFileName = "DocumentsUI.apk"
+            }
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    sourceSets {
+        main {
+            java.srcDirs = ['src', 'statslog-docsui-java-gen/gen']
+            res.srcDirs = ['res']
+            manifest.srcFile 'AndroidManifest.xml'
+        }
+    }
+
+    lintOptions {
+        checkReleaseBuilds false
+        abortOnError false
+    }
+}
+
+dependencies {
+    compileOnly files('libs/framework.jar')
+    implementation files('libs/modules-utils-build_system.jar')
+    implementation libs.guava
+    implementation libs.commons.compress
+    implementation libs.transition
+    implementation libs.legacy.support.v4
+    implementation libs.appcompat
+    implementation libs.recyclerview
+    implementation libs.recyclerview.selection
+    implementation libs.material
+}
+
+allprojects {
+    tasks.withType(JavaCompile).configureEach { task ->
+        task.doFirst {
+            def originalClasspath = options.bootstrapClasspath ?: files()
+            options.bootstrapClasspath = files(
+                    file("${rootDir}/libs/framework.jar"),
+            ).plus(originalClasspath)
+        }
+    }
+}
