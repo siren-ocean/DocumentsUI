@@ -1,16 +1,17 @@
-# English | [中文文档](README.cn.md)
+# [English](README.md) | 中文文档
 ## DocumentsUI from android-13.0.0_r31
-### Building DocumentsUI outside AOSP source in Android Studio
+### DocumentsUI脱离源码在Android Studio的编译
 
-### Support Notes
-* Instead of changing the project's directory structure, we add additional configurations and dependencies to build Gradle environment support
-* The following code modifications are required for proper operation (as shown below)
+### 支持说明
+* 不试图改变项目本身的目录结构
+* 通过添加额外的配置和依赖构建Gradle环境支持
+* 修复以下的代码使项目能运行起来 (如下)
 
 
 ```
 @PATH: src/com/android/documentsui/DirectoryLoader.java
 *********************************************************
-// Deprecated method
+//已经弃用的方法
 //@Override
 protected Executor getExecutor() {
     return ProviderExecutor.forAuthority(mRoot.authority);
@@ -30,7 +31,7 @@ public void updateAsync(boolean forceRefreshAll, @Nullable Runnable callback) {
         assert (recentRoot.rootId == null);
         assert (recentRoot.derivedIcon == R.drawable.ic_root_recent);
         assert (recentRoot.derivedType == RootInfo.TYPE_RECENTS);
-        // This assertion will crash in debug mode, comment it out
+        // 调试模式下会奔溃，注释掉这句断言
         // assert (recentRoot.flags == (Root.FLAG_LOCAL_ONLY | Root.FLAG_SUPPORTS_IS_CHILD));
         assert (recentRoot.availableBytes == -1);
     }
@@ -40,39 +41,39 @@ public void updateAsync(boolean forceRefreshAll, @Nullable Runnable callback) {
 }
 ```
 
-## Building with Command Line
-### Environment Requirements
+## 使用命令编译
+### 环境依赖
 *  Gradle 7.5
 *  JDK version 11
 
 ```
-# Setup build environment
+# 构建环境
 gradle wrapper
 
-# Build and package
+# 打包编译
 ./gradlew assemble
 ```
 
 
-## Building in Android Studio
 
-#### Execute Build APK in Android Studio, then push the apk to the DocumentsUI directory on the device
+## 使用Android Studio编译
+
+### 执行Android Studio上Build APK的操作, 然后将apk推送到设备上DocumentsUI所在的目录
 
 ```
 adb push DocumentsUI.apk /system/priv-app/DocumentsUI/
 
 adb shell killall com.android.documentsui
 ```
-### PS: The first push may not start properly, you need to reboot the device.
+######  首次推送会起不来，需要重启一下设备
 ```
 adb reboot
 ```
 
 
-## Build Steps
+## 构建步骤
 
-### Step 1: Add Static Dependencies
-
+### Step1：引入静态依赖
 ##### @framework.jar:
 ```
 // android-13/out/target/common/obj/JAVA_LIBRARIES/framework_intermediates/classes-header.jar
@@ -89,8 +90,8 @@ implementation files('libs/modules-utils-build_system.jar')
 ![avatar](images/modules-utils-build_system.png)
 
 
-### Step 2: Add Code
-#### Import a special class DocumentsStatsLog, which is auto-generated and can be found in the out directory
+### Step2：引入代码
+###### 导入一个特殊类DocumentsStatsLog，该类是自动生成的，可在out目录找到
 ```
 // android-13/out/soong/.intermediates/packages/apps/DocumentsUI/statslog-docsui-java-gen
 
@@ -104,16 +105,16 @@ sourceSets {
 ```
 
 
-## Generate platform.keystore Default Signature
+## 生成platform.keystore默认签名
 
-Find the signing certificates in the android-13/build/target/product/security path and use [keytool-importkeypair](https://github.com/getfatday/keytool-importkeypair) to generate the keystore.
-Execute the following command:  
+在 android-13/build/target/product/security路径下找到签名证书，并使用 [keytool-importkeypair](https://github.com/getfatday/keytool-importkeypair) 生成keystore,
+执行如下命令：  
 
 ```
 ./keytool-importkeypair -k platform.keystore -p 123456 -pk8 platform.pk8 -cert platform.x509.pem -alias platform
 ```
 
-And add the following code to the gradle configuration:
+并将以下代码添加到gradle配置中：
 
 ```
     signingConfigs {
@@ -142,7 +143,7 @@ And add the following code to the gradle configuration:
 
 ---
 
-### Related Projects
+### 关联项目
 * [Settings](https://github.com/siren-ocean/Settings)
 * [SystemUI](https://github.com/siren-ocean/SystemUI)
 * [Launcher3](https://github.com/siren-ocean/Launcher3)
