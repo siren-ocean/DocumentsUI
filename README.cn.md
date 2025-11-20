@@ -1,17 +1,18 @@
-# English | [中文文档](README.cn.md)
+# [English](README.md) | 中文文档
 ## DocumentsUI from android-11.0.0_r10
-### Building DocumentsUI outside AOSP source in Android Studio
+### DocumentsUI脱离源码在Android Studiod的编译
 
-### Support Notes
-* Instead of changing the project's directory structure, we add additional configurations and dependencies to build Gradle environment support
-* The following two code modifications are required for proper operation (as shown below)
+### 支持说明
+* 不试图改变项目本身的目录结构
+* 通过添加额外的配置和依赖构建Gradle环境支持
+* 会修改以下两处不支持运行的代码 (如下)
 
  
 
 ```
 1. com.android.documentsui.DirectoryLoader
 *********************************************************
-// Deprecated method
+//已经弃用的方法
 //@Override
 protected Executor getExecutor() {
     return ProviderExecutor.forAuthority(mRoot.authority);
@@ -33,7 +34,7 @@ public void updateAsync(boolean forceRefreshAll, @Nullable Runnable callback) {
         assert (recentRoot.rootId == null);
         assert (recentRoot.derivedIcon == R.drawable.ic_root_recent);
         assert (recentRoot.derivedType == RootInfo.TYPE_RECENTS);
-        // Ignore this assertion, the values are not equal, but the AOSP compiled version won't crash !=_=
+        //忽略此处断言，两边不相等，但是系统编出来的不会奔溃 !=_=
         //assert (recentRoot.flags == (Root.FLAG_LOCAL_ONLY | Root.FLAG_SUPPORTS_IS_CHILD));
         assert (recentRoot.availableBytes == -1);
     }
@@ -43,42 +44,40 @@ public void updateAsync(boolean forceRefreshAll, @Nullable Runnable callback) {
 }
 ```
 
-## Building with Command Line
-### Environment Requirements
+## 使用命令编译
+### 环境依赖
 *  Gradle 6.5
 *  JDK version >= 8
 
 ```
-# Setup build environment
+# 构建环境
 gradle wrapper
 
-# Build and package
+# 打包编译
 ./gradlew assemble
 ```
 
 
-## Building in Android Studio
-### Recommended
+## 使用Android Studio编译
+### 推荐使用
 *  Android Studio >= 4.2.2 & JDK version >= 8
 
-#### Execute Build APK in Android Studio, then push the apk to the DocumentsUI directory on the device
+### 执行Android Studio上Build APK的操作, 然后将apk推送到设备上DocumentsUI所在的目录
 
 ```
 adb push DocumentsUI.apk /system/priv-app/DocumentsUI/
 
 adb shell killall com.android.documentsui
 ```
-### PS: If DocumentsUI cannot start properly, you need to reboot the device.
+######  如果DocumentsUI不能正常起来，则需要重启一下设备
 ```
 adb reboot
 ```
 
 
-## Build Steps
+## 构建步骤
 
-### Step 1: Add Static Dependencies
-
-
+### Step1：引入静态依赖
 ##### @framework.jar:
 ```
 // AOSP/android-11/out/target/common/obj/JAVA_LIBRARIES/framework_intermediates/classes-header.jar
@@ -102,15 +101,15 @@ implementation(name: 'legacy-support-v13-1.1.0-alpha01', ext: 'aar')
 
 
 ![avatar](images/legacy-support-v13-1.1.0-alpha01.png)
-### PS: legacy-support-v13-1.1.0 cannot be referenced online in the current version, so we use a static dependency instead
+###### ps: legacy-support-v13-1.1.0 在当前版本无法通过线上引用，故换成静态
 ```
 ## implementation 'androidx.legacy:legacy-support-v13-1.1.0-alpha01'
 ```
 
 
 
-### Step 2: Add Code
-#### Import a special class DocumentsStatsLog, which is auto-generated and can be found in the out directory
+### Step2：引入代码
+###### 导入一个特殊类DocumentsStatsLog，该类是自动生成的，可在out目录找到
 ```
 // AOSP/android-11/out/soong/.intermediates/packages/apps/DocumentsUI/statslog-docsui-java-gen
 
@@ -124,16 +123,16 @@ sourceSets {
 ```
 
 
-## Generate platform.keystore Default Signature
+## 生成platform.keystore默认签名
 
-Find the signing certificates in the AOSP/android-11/build/target/product/security path and use [keytool-importkeypair](https://github.com/getfatday/keytool-importkeypair) to generate the keystore.
-Execute the following command:  
+在AOSP/android-11/build/target/product/security路径下找到签名证书，并使用 [keytool-importkeypair](https://github.com/getfatday/keytool-importkeypair) 生成keystore,
+执行如下命令：  
 
 ```
 ./keytool-importkeypair -k platform.keystore -p 123456 -pk8 platform.pk8 -cert platform.x509.pem -alias platform
 ```
 
-And add the following code to the gradle configuration:
+并将以下代码添加到gradle配置中：
 
 ```
     signingConfigs {
@@ -163,7 +162,7 @@ And add the following code to the gradle configuration:
 
 ---
 
-### Related Projects
+### 关联项目
 * [Settings](https://github.com/siren-ocean/Settings)
 * [SystemUI](https://github.com/siren-ocean/SystemUI)
 * [Launcher3](https://github.com/siren-ocean/Launcher3)
