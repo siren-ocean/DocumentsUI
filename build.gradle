@@ -1,0 +1,103 @@
+plugins {
+    alias(libs.plugins.android.application)
+}
+
+android {
+    namespace "com.android.documentsui"
+    compileSdk COMPILE_SDK.toInteger()
+
+    defaultConfig {
+        applicationId "com.android.documentsui"
+        minSdk MIN_SDK_VERSION.toInteger()
+        targetSdk TARGET_SDK_VERSION.toInteger()
+        versionCode 34
+        versionName "14"
+    }
+
+    signingConfigs {
+        platform {
+            storeFile file("platform.keystore")
+            storePassword '123456'
+            keyAlias 'platform'
+            keyPassword '123456'
+        }
+    }
+
+    buildTypes {
+        release {
+            debuggable false
+            minifyEnabled false
+            signingConfig signingConfigs.platform
+        }
+
+        debug {
+            debuggable true
+            minifyEnabled false
+            signingConfig signingConfigs.platform
+        }
+
+        applicationVariants.all { variant ->
+            variant.outputs.all {
+                outputFileName = "DocumentsUI.apk"
+            }
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    sourceSets {
+        main {
+            java.srcDirs = ['src', 'statslog-docsui-java-gen/gen']
+            res.srcDirs = ['res']
+            manifest.srcFile 'AndroidManifest.xml'
+        }
+    }
+
+    lintOptions {
+        checkReleaseBuilds false
+        abortOnError false
+    }
+}
+
+dependencies {
+    compileOnly files('libs/framework.jar')
+    implementation files('libs/modules-utils-build_system.jar')
+    implementation libs.guava
+    implementation libs.commons.compress
+    implementation libs.transition
+    implementation libs.legacy.support.v4
+    implementation libs.appcompat
+    implementation libs.recyclerview
+    implementation libs.recyclerview.selection
+    implementation libs.material
+}
+
+allprojects { project ->
+    project.plugins.withId("com.android.application") {
+        applyReorderRule(project)
+    }
+}
+
+def applyReorderRule(Project project) {
+    project.gradle.projectsEvaluated {
+        project.tasks.matching { it.name == "compileDebugJavaWithJavac" }.configureEach { task ->
+            task.doFirst {
+                task.classpath = reorderClasspath(task.classpath.files)
+            }
+        }
+        project.tasks.matching { it.name == "compileReleaseJavaWithJavac" }.configureEach { task ->
+            task.doFirst {
+                task.classpath = reorderClasspath(task.classpath.files)
+            }
+        }
+    }
+}
+
+def reorderClasspath(Set<File> classpathSet) {
+    def androidJar = classpathSet.find { it.name == "android.jar" }
+    def others = classpathSet - (androidJar ? [androidJar] : [])
+    return files((others + (androidJar ?: [])).toArray())
+}
